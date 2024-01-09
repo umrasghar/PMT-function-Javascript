@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Calculator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #calculator {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="calculator">
+        <label for="loanAmount">Loan amount</label>
+        <input type="number" id="loanAmount" placeholder="Enter loan amount" required>
+    
+        <label for="interestRate">Interest percentage</label>
+        <input type="number" id="interestRate" placeholder="Enter interest rate" required>
+    
+        <label for="loanDuration">Duration (months)</label>
+        <input type="number" id="loanDuration" placeholder="Enter loan duration" required>
+    
+        <label for="finalTerm">Final term</label>
+        <input type="number" id="finalTerm" placeholder="Enter final term" required>
+    
+        <button id="calculateBtn" style="display: none;">Calculate</button>
+    
+        <div id="result" style="display: none;"></div>
+    </div>
+    
+    <script>
+        function calculatePMT(rate, nperiod, pv, fv, type) {
+            if (!fv) fv = 0;
+            if (!type) type = 0;
+    
+            if (rate == 0) return -(pv + fv) / nperiod;
+    
+            var pvif = Math.pow(1 + rate, nperiod);
+            var pmt = rate / (pvif - 1) * -(pv * pvif + fv);
+    
+            if (type == 1) {
+                pmt /= (1 + rate);
+            }
+    
+            return pmt.toFixed(2);
+        }
+    
+        function calculatePayment() {
+            var loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            var interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+            var loanDuration = parseInt(document.getElementById('loanDuration').value);
+            var finalTerm = parseFloat(document.getElementById('finalTerm').value);
+    
+            var monthpay = calculatePMT(interestRate / 12, loanDuration, -loanAmount, finalTerm);
+    
+            var resultElement = document.getElementById('result');
+            var calculateBtn = document.getElementById('calculateBtn');
+    
+            if (!isNaN(monthpay)) {
+                resultElement.innerText = "Monthly payment: € " + monthpay;
+                resultElement.style.display = 'block';
+            } else {
+                resultElement.style.display = 'none';
+            }
+    
+            calculateBtn.style.display = 'none';
+        }
+    
+        // Add event listeners to input fields
+        var inputFields = document.querySelectorAll('input');
+        inputFields.forEach(function (input) {
+            input.addEventListener('input', function () {
+                calculatePayment();
+                document.getElementById('calculateBtn').style.display = 'block';
+            });
+        });
+    </script>
+    
+    </body>
+    </html>
